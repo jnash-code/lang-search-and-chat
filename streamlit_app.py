@@ -11,7 +11,7 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 import streamlit as st
 
 st.set_page_config(page_title="LangChain: Chat with search", page_icon="🦜")
-st.title("🦜 LangChain: Chat with search")
+st.title("🦜 Code from AgentExecutor.ipynb")
 
 openai_api_key = st.sidebar.text_input("OpenAI API Key", type="password")
 
