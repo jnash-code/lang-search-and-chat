@@ -67,4 +67,4 @@ if prompt := st.chat_input(placeholder="Who won the Women's U.S. Open in 2018?")
         cfg["configurable"] = {"session_id": "any"}
         response = executor_with_memory.invoke({"input": prompt}, cfg)
         st.write(response["output"])
-        st.session_state.steps[str(len(msgs.messages) - 1)] = response["intermediate_steps"]
+        #st.session_state.steps[str(len(msgs.messages) - 1)] = response["intermediate_steps"]
