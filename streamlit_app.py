@@ -21,17 +21,14 @@ from langchain import hub
 prompt_for_agent = hub.pull("hwchase17/openai-functions-agent")
 
 msgs = StreamlitChatMessageHistory()
-memory = ConversationBufferMemory(
-    chat_memory=msgs, return_messages=True, memory_key="chat_history", output_key="output"
-)
+ 
 if len(msgs.messages) == 0 or st.sidebar.button("Reset chat history"):
     msgs.clear()
     msgs.add_ai_message("How can I help you?")
     st.session_state.steps = {}
 
-avatars = {"human": "user", "ai": "assistant"}
 for idx, msg in enumerate(msgs.messages):
-    with st.chat_message(msg.type): #(avatars[msg.type]):
+    with st.chat_message(msg.type):
         st.write(msg.content)
 
 if prompt := st.chat_input(placeholder="Who won the Women's U.S. Open in 2018?"):
@@ -53,10 +50,7 @@ if prompt := st.chat_input(placeholder="Who won the Women's U.S. Open in 2018?")
         history_messages_key="chat_history",
     )
     with st.chat_message("assistant"):
-        st_cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)
         cfg = RunnableConfig()
-        cfg["callbacks"] = [st_cb]
-        #config = {"configurable": {"session_id": "any"}}
         cfg["configurable"] = {"session_id": "any"}
         response = executor_with_memory.invoke({"input": prompt}, cfg)
         st.write(response["output"])
