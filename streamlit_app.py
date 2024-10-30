@@ -5,6 +5,8 @@ from langchain_community.chat_message_histories import StreamlitChatMessageHisto
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_core.runnables import RunnableConfig
 from langchain_openai import ChatOpenAI
+from langchain.agents import AgentExecutor, create_tool_calling_agent, tool
+from langchain_core.runnables.history import RunnableWithMessageHistory
 
 import streamlit as st
 
@@ -12,6 +14,11 @@ st.set_page_config(page_title="LangChain: Chat with search", page_icon="🦜")
 st.title("🦜 LangChain: Chat with search")
 
 openai_api_key = st.sidebar.text_input("OpenAI API Key", type="password")
+
+from langchain import hub
+
+# Get the prompt to use - you can modify this!
+prompt_for_agent = hub.pull("hwchase17/openai-functions-agent")
 
 msgs = StreamlitChatMessageHistory()
 memory = ConversationBufferMemory(
@@ -41,20 +48,23 @@ if prompt := st.chat_input(placeholder="Who won the Women's U.S. Open in 2018?")
         st.info("Please add your OpenAI API key to continue.")
         st.stop()
 
-    llm = ChatOpenAI(model_name="gpt-3.5-turbo", openai_api_key=openai_api_key, streaming=True)
+    llm = ChatOpenAI(model_name="gpt-4o-mini", openai_api_key=openai_api_key, streaming=True)
     tools = [DuckDuckGoSearchRun(name="Search")]
-    chat_agent = ConversationalChatAgent.from_llm_and_tools(llm=llm, tools=tools)
-    executor = AgentExecutor.from_agent_and_tools(
-        agent=chat_agent,
-        tools=tools,
-        memory=memory,
-        return_intermediate_steps=True,
-        handle_parsing_errors=True,
+
+    chat_agent = create_tool_calling_agent(llm, tools, prompt_for_agent)
+    executor = AgentExecutor(agent=chat_agent, tools=tools)
+    executor_with_memory = RunnableWithMessageHistory(
+        executor,
+        lambda session_id: msgs,  # Always return the instance created earlier
+        input_messages_key="input",
+        history_messages_key="chat_history",
     )
     with st.chat_message("assistant"):
         st_cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)
         cfg = RunnableConfig()
         cfg["callbacks"] = [st_cb]
-        response = executor.invoke(prompt, cfg)
+        #config = {"configurable": {"session_id": "any"}}
+        cfg["configurable"] = {"session_id": "any"}
+        response = executor_with_memory.invoke({"input": prompt}, cfg)
         st.write(response["output"])
         st.session_state.steps[str(len(msgs.messages) - 1)] = response["intermediate_steps"]
