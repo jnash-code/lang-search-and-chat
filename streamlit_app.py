@@ -24,7 +24,7 @@ if len(msgs.messages) == 0 or st.sidebar.button("Reset chat history"):
 
 avatars = {"human": "user", "ai": "assistant"}
 for idx, msg in enumerate(msgs.messages):
-    with st.chat_message(avatars[msg.type]):
+    with st.chat_message(msg.type): #(avatars[msg.type]):
         # Render intermediate steps if any were saved
         for step in st.session_state.steps.get(str(idx), []):
             if step[0].tool == "_Exception":
