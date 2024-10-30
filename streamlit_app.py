@@ -32,13 +32,6 @@ if len(msgs.messages) == 0 or st.sidebar.button("Reset chat history"):
 avatars = {"human": "user", "ai": "assistant"}
 for idx, msg in enumerate(msgs.messages):
     with st.chat_message(msg.type): #(avatars[msg.type]):
-        # Render intermediate steps if any were saved
-        for step in st.session_state.steps.get(str(idx), []):
-            if step[0].tool == "_Exception":
-                continue
-            with st.status(f"**{step[0].tool}**: {step[0].tool_input}", state="complete"):
-                st.write(step[0].log)
-                st.write(step[1])
         st.write(msg.content)
 
 if prompt := st.chat_input(placeholder="Who won the Women's U.S. Open in 2018?"):
