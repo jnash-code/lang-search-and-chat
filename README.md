@@ -1,5 +1,8 @@
 # 🎈 My Note
 
+
+## From previous commit
+
 With this code 
 ```
 with st.chat_message("+"):
@@ -20,4 +23,16 @@ for idx, msg in enumerate(msgs.messages):
 ```
 ![...](after_rerun.png)
 
+
+## Update
+This chunk has been modified to confirm that, after our agent invokes, the lastest content of the response has been recorded in `msgs.messages`
+```
+    cfg = RunnableConfig()
+    cfg["configurable"] = {"session_id": "any"}
+    response = executor_with_memory.invoke({"input": prompt}, cfg)
+    
+    msg = msgs.messages[-1]
+    latest_slot = st.chat_message("-")
+    latest_slot.write(msg.content)
+```
 

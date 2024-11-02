@@ -49,8 +49,12 @@ if prompt := st.chat_input(placeholder="Who won the Women's U.S. Open in 2018?")
         input_messages_key="input",
         history_messages_key="chat_history",
     )
-    with st.chat_message("+"):
-        cfg = RunnableConfig()
-        cfg["configurable"] = {"session_id": "any"}
-        response = executor_with_memory.invoke({"input": prompt}, cfg)
-        st.write(response["output"])
+    
+    cfg = RunnableConfig()
+    cfg["configurable"] = {"session_id": "any"}
+    response = executor_with_memory.invoke({"input": prompt}, cfg)
+    
+    msg = msgs.messages[-1]
+    latest_slot = st.chat_message("-")
+    latest_slot.write(msg.content)
+    
