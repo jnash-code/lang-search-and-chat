@@ -54,3 +54,5 @@ if prompt := st.chat_input(placeholder="Who won the Women's U.S. Open in 2018?")
         cfg["configurable"] = {"session_id": "any"}
         response = executor_with_memory.invoke({"input": prompt}, cfg)
         st.write(response["output"])
+        st.page_link("http://www.google.com", label="Google", icon="🌎")
+        st.page_link("http://www.yahoo.com", label="Yahoo", icon="🏠")
